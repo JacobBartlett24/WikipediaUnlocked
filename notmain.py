@@ -34,10 +34,12 @@ def createTree(arr,i,n):
 def inOrder(root):
     if(root != None):
         inOrder(root.left)
+        print(root.data['title'])
         if(len(root.data['cast']) != 0):
             for actor in root.data['cast']:
                 actor = re.sub(r"[\[\]]",'',actor)
                 print(actor)
+        print('\n')
         inOrder(root.right)
     
 root= None
