@@ -1,3 +1,4 @@
+from itertools import count
 import json
 import re
 
@@ -31,64 +32,52 @@ def createTree(arr,i,n):
 
     return root
 
-#prints inorder
-def inOrder(root):
-    if(root != None):
-        inOrder(root.left)
-        print(root.data['title'])
-        if(len(root.data['cast']) != 0):
-            for actor in root.data['cast']:
-                #actor = re.sub(r"[\[\]]",'',actor)
-                
-                findActor(root,actor,isContained=False)
-        else: print('no cast')
-        print('\n')
-        inOrder(root.right)
-
-#compile movies of a certain actor
-#actorname + all the movies
-def compileMovies(root,selectActor):
-    if(root != None):
-        pass
-        
-def findActor(root,actor,isContained):
-    if(root != None):
-        findActor(root.left,actor,isContained = False)
-        if(len(root.data['cast']) != 0):
-            for castMember in root.data['cast']:
-                castMember = re.sub(r"[\[\]]",'',castMember)
-                if castMember == actor:
-                    isContained = True
-        if(isContained):
-            print(root.data['title'])
-        findActor(root.right,actor,isContained = False)
-
-
-
-#    if(root != None):
-#        compileMovies(root.left,selectActor)
-#        if(len(root.data['cast']) != 0):
-#            for actor in root.data['cast']:
-#                actor = re.sub(r"[\[\]]",'',actor)
-#                if actor == selectActor:
-#                    print(root.data['title'])
-#        compileMovies(root.right,selectActor)
-    
-    
-#root= None
-#
-#foundMovie = inOrder(root)
 root = None
 root = createTree(moviesList,0,len(moviesList))
-#findActor(root,'Miles Teller',isContained=False)
+cnt = 0
+accessPointArray = []
 
-def listActors():
-    for movie in moviesList:
-        cast = movie['cast']
-        for actor in cast:
-            actor = re.sub(r"[\[\]]",'',actor)
-            print(actor)
-            findActor(root,actor,isContained=False)
-            print()
+def searchTree(root,cnt,actor):
+    if(root != None):
+        cnt +=1
+        for notKev in root.data['cast']:
+            notKev = re.sub(r"[\[\]]",'',notKev)
+            if(notKev == actor):
+                accessPointArray.append(root)
+                cnt = 0
+        searchTree(root.left,cnt,actor)
+        searchTree(root.right,cnt,actor)
 
-listActors()
+accessPointArray2 = []
+def searchTree2(root,cnt,actor):
+    if(root != None):
+        cnt +=1
+        for notKev in root.data['cast']:
+            notKev = re.sub(r"[\[\]]",'',notKev)
+            if(notKev == actor):
+                accessPointArray2.append(root)
+                cnt = 0
+        searchTree2(root.left,cnt,actor)
+        searchTree2(root.right,cnt,actor)
+
+searchTree(root,0,actor = 'Morgan Freeman')
+searchTree2(root,0,actor = 'Kevin Bacon')
+print(accessPointArray2)
+
+def findConnection(root,cnt,actor):
+    if(root!=None):
+        for actors in root.data['cast']:
+            actors = re.sub(r"[\[\]]",'',actors)
+            if(actors == actor):
+                print(root.data['title'])
+        findConnection(root.left,cnt,actor)
+        findConnection(root.right,cnt,actor)
+
+def findKev(actor = 'Morgan Freeman'):
+    for node in accessPointArray2:
+        root = node
+        findConnection(root,0,actor)
+
+findKev()
+
+
