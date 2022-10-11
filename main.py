@@ -2,7 +2,7 @@ from itertools import count
 import json
 import re
 
-#exmaple json object: {"title":"The Wolf of Wall Street (2013 film)","cast":["[[Leonardo DiCaprio]]","[[Jonah Hill]]","[[Margot Robbie]]","[[Matthew McConaughey]]","[[Kyle Chandler]]","[[Rob Reiner]]","[[Jon Favreau]]","[[Jean Dujardin]]","[[Jon Bernthal]]","[[Joanna Lumley]]","[[Cristin Milioti]]","[[Christine Ebersole]]","[[Shea Whigham]]","[[Katarina Čas]]","[[Stephanie Kurtzuba]]","[[P. J. Byrne]]","[[Kenneth Choi]]","[[Brian Sacca]]","[[Henry Zebrowski]]","[[Ethan Suplee]]","[[Jake Hoffman (actor)|Jake Hoffman]]","[[Mackenzie Meehan]]","[[Bo Dietl]]","[[Jon Spinogatti]]","[[Aya Cash]]","[[Jordan Belfort]]","[[Catherine Curtin]]","[[Stephen Kunken]]","[[Barry Rothbart]]","[[Welker White]]","[[Daniel Flaherty|Danny Flaherty]]","[[Ted Griffin]]","[[Steven Boyer]]","[[J. C. MacKenzie]]","[[Ashlie Atkinson]]","[[Thomas Middleditch]]","[[Fran Lebowitz]]","[[Spike Jonze]]"],"directors":["[[Martin Scorsese]]"],"producers":["[[Martin Scorsese]]","[[Leonardo DiCaprio]]","[[Riza Aziz]]","[[Joey McFarland]]","[[Emma Tillinger Koskoff]]"],"companies":["[[Paramount Pictures]]"],"year":2013}
+
 
 moviesList = []
 testList = [{"title":"Manhatta","cast":['Morgan Freeman'],"directors":["[[Charles Sheeler]]","[[Paul Strand]]"],"year":1921},
@@ -48,12 +48,29 @@ def searchTree(root,actor,arr):
         searchTree(root.right,actor,arr)
     return arr
 
+"""
+    NAME:           findHeight
+    PARAMETERS:     root, the tree starting at the specified movie
+    PURPOSE:        To find the height of said node.
+    PRECONDITION:   The array should be full of movie nodes 
+    POSTCONDITION:  The heightArray should be full of integers representing the heights of certain movies
+"""
+
+
 def findHeight(root):
     if root is None:
         return 0
     leftHeight = findHeight(root.left)
     rightHeight = findHeight(root.right)
     return max(leftHeight,rightHeight) + 1
+
+"""
+    NAME:           findHeightOfAllMovies
+    PARAMETERS:     arr, list of nodes that contains movies of a certain actor
+    PURPOSE:        To return an array of heights of all movies passed by array
+    PRECONDITION:   The array should be full of movie nodes 
+    POSTCONDITION:  The heightArray should be full of integers representing the heights of certain movies
+"""
 
 def findHeightOfAllMovies(arr):
     heightArray = []
@@ -64,8 +81,12 @@ def findHeightOfAllMovies(arr):
         
 
 
-def maxOfArr():
-    pass
+"""
+    AUTHOR:        Jacob Bartlett, Sam Wilson
+    FILENAME:      main.py 
+    SPECIFICATION: Find distance between two nodes (actors), should return the Bacon number (distance)
+    FOR:           CS 3368 Introduction to Artificial Intelligence Section 001
+"""
 
 def main():
     root = None
