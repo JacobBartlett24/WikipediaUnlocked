@@ -3,8 +3,20 @@ import re
 import time
 from typing import cast
 
+class Actor(): 
+    def __init__(self, line, name):
+        self.line = line
+        self.name = name
+        self.movies_list = []
+        self.movies_count = 1
+
+    def addToList(self, movie):
+        if(movie not in self.movies_list):
+            self.movies_list.append(movie)
+
+
 moviesList = []
-actorList = []
+actorList = {}
 actorJsonList = []
 
 testList = [{"title":"The Killer Must Kill Again","cast":["[[George Hilton (actor)|George Hilton]]","[[Antoine Saint-John]]","[[Femi Benussi]]","[[Cristina Galbó]]","[[Eduardo Fajardo]]","[[Tere Velázquez]]","[[Alessio Orano]]"],"directors":["[[Luigi Cozzi]]"],"producers":["Sergio Gobbi","[[Umberto Lenzi]] <small>(as Umberto Linzi)</small>","Giuseppe Tortorella"],"companies":["Albione Cinematografica","Git International Film","Paris-Cannes Productions"],"year":1975},
@@ -18,27 +30,40 @@ with open('data.txt') as f:
         moviesList.append(movieDict)
 
 def movieCount():
-
+    
     for movie in moviesList:
-        
         for i in range(0,len(movie['cast'])):
             
             actor = re.sub(r"[\[\]]",'',movie['cast'][i])
 
-            if(actor not in actorList):
+            if actor in actorList.keys():
+                actorList[actor].append(movie['title'])
+            else:
+                actorList[actor] = [movie['title']]
+            
 
-                #actorJson = {
+
+
+            """ if(actor not in actorList):
+
+                #actorJson = 
                 #                "name": actor,
                 #                "count": "0",
                 #            }
                 actorList.append(actor)
-                
+                 """
                 #actorJsonList.append(actorJson)
-                
+    
+
+    json.dump(actorList, open("actor_data.json", 'w'), indent=2)
+    
     createGraph(actorList,moviesList)
                     
 def createGraph(actorList, moviesList):
-    matrix = [[0 for x in range(len(actorList))] for y in range (len(moviesList))]
+    
+    
+
+    """ matrix = [[0 for x in range(len(actorList))] for y in range (len(moviesList))]
     
     print('Starting matrix creation...')
     for i in range (len(matrix)):
@@ -47,6 +72,10 @@ def createGraph(actorList, moviesList):
                 actor = re.sub(r"[\[\]]",'',castMember)
                 if(actor == actorList[i]):
                     matrix[i][j] = 1
-    print(matrix)
+    print(matrix) """
 
+#movie_file = open("actor_data.txt", "w")
+#movieCount(movie_file)
+#movie_file.close()
 movieCount()
+
