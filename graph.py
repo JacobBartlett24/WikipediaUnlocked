@@ -1,24 +1,9 @@
-from collections import deque
 import json
 import re
-import time
 from typing import cast
 import sys
-import threading
 
 sys.setrecursionlimit(100000000)
-
-class Movie(): 
-    def __init__(self, weight, name):
-        self.weight = weight
-        self.name = name
-        self.movies_list = []
-        self.movies_count = 1
-
-    def addToList(self, movie):
-        if(movie not in self.movies_list):
-            self.movies_list.append(movie)
-
 
 moviesList = []
 actorDict = {}
@@ -29,6 +14,9 @@ testList = [{"title":"The Killer Must Kill Again","cast":["[[George Hilton (acto
 {"title":"Manzil (1979 film)","cast":["[[Amitabh Bachchan]]","[[Moushumi Chatterjee]]","[[Rakesh Pandey]]","[[Satyen Kappu]]","[[Urmila Bhatt]]","[[Lalita Pawar]]","[[Shreeram Lagoo]]","[[A. K. Hangal]]","[[C. S. Dubey]]"],"directors":["[[Basu Chatterjee]]"],"producers":["Jai Pawar","Raj Prakash","Rajiv Suri"],"year":1979},
 {"title":"Saajan Ki Baahon Mein","cast":["[[Rishi Kapoor]]","Sumeet Saigal","[[Raveena Tandon]]","[[Tabu (actress)|Tabu]]","[[Prem Chopra]]","[[Deven Verma]]","[[Laxmikant Berde]]","[[Pran (actor)|Pran]]","[[Saeed Jaffrey]]"],"directors":["Jay Prakash"],"producers":["Dinesh B. Patel"],"year":1995}]
 def load():
+    """
+    Load given movie data into a list for manipulation
+    """
     with open('data.txt') as f:
         for jsonObj in f:
             movieDict = json.loads(jsonObj)
@@ -36,6 +24,10 @@ def load():
     return moviesList
 
 def createMovieDict():
+    """
+    Create simplified movie dictionary with cast as values 
+    for computation in program
+    """
     sampleDict = {}
 
     for movie in moviesList:
@@ -47,10 +39,12 @@ def createMovieDict():
     return sampleDict
 
 def movieCount():
+    """
+    Get all actors from movies in data.txt file 
+    then dump actor dictionary to actor_data.json file
+    """
     
     for movie in moviesList:
-        #keys = movie.keys()
-        #if('year' in keys and int(movie['year']) > 1999 and int(movie['year']) < 2001):
 
             for i in range(0,len(movie['cast'])):
                 
@@ -60,38 +54,31 @@ def movieCount():
                     actorDict[actor].append(movie['title'])
                 else:
                     actorDict[actor] = [movie['title']]
-    actorDict['Kevin Bacon'].insert(0,'Starting Over (1979 film)')
-    
-    actorDict['Wallace Shawn'].insert(0,'Clueless')
-    actorDict['Paul Rudd'].insert(0,'Clueless')
 
     json.dump(actorDict, open("actor_data.json", 'w'), indent=2)
     return actorDict
-                    
-def setWeights(actorDict,start):
-    pass
-    #Set start node to start
-    #some type of graph traversel (DFS ~) sets starting weights of graph
-    #Call function to traverse graph
 
-results = []
-for actor in actorDict.keys():
-    results.append(actor)
-
-
-def bfs(actorDict,start,target,visited,path):
-    if len(path) > 3:
+def findPath(actorDict,start,target,visited,path):
+    """
+    First attempt at combined DFS and BFS search - 
+    change depth of dfs search using depth variable
+    cannot accurately deliver best path consistently due to
+    it eliminating previously seen actors for potential 
+    future connection
+    """
+    depth = 2
+    
+    if len(path) >= depth:
        del path[:]
        start = og
-       #bfs(actorDict, start, target, visited, path)
 
     visited.append(start)
     for currMovie in actorDict[start]:
         #actors in the cast of the movies start is in
         for actor in movieDict[currMovie]:
             if(actor == target):
-                print(currMovie)
-                print(path)
+                #print(currMovie)
+                #print(path)
                 exit(0)
                 
             elif(actor not in visited and currMovie not in path):
@@ -102,6 +89,46 @@ def bfs(actorDict,start,target,visited,path):
     # Print the distance, # of traversals to measure performance
     # Extra: Take that information and feed it to AI to set different weights later
 
+def findNeighbors(person_id):
+    """ 
+    Return a list of (movie, person) pairs to represent 
+    movies as the edges connecting the actor nodes to each other.
+    """
+    movies_in = actorDict[person_id]
+    neighbors = set()
+
+    for mov in movies_in:
+        cast = movieDict[mov]
+        for actor in cast:
+            neighbors.add((mov, actor))
+    print(neighbors)
+    return neighbors
+
+
+def findShortest(current, target):
+    """ 
+    Proper algorithm to perform breadth first search - 
+    Time consuming and costly as degrees of separation increase
+    """
+    explored = set([])
+    frontier = [current]
+    parents = {}
+
+    while len(frontier) > 0:
+        actor = frontier.pop(0)
+        if actor == target:
+            break
+        explored.add(actor)
+
+        for (m, a) in findNeighbors(actor):
+            if not a in frontier and not a in explored:
+                frontier.append(actor)
+                parents[a] = (m, actor)
+                if not target in parents:
+                    return None
+        if not target in parents:
+            return None
+                
 def dfs(actorDict,start,target):
     pass
 
@@ -115,7 +142,16 @@ moviesList = load()
 movieDict = createMovieDict()
 actorDict = movieCount()
 actorDictLength = (len(actorDict))
-
 og = 'Kevin Bacon'
 
-print(bfs(actorDict,start=og, target='Paul Rudd',visited=[],path = []))
+
+path = findShortest(og, target='Paul Rudd')
+if path is None:
+    print("Not found")
+else:
+    degrees_of_separation = len(path)
+    print(f"{degrees_of_separation} degrees of separation.")
+
+    print(path)
+
+#print(findPath(actorDict,start=og, target='Paul Rudd',visited=[],path = []))
