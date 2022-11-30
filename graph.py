@@ -60,11 +60,9 @@ def movieCount():
 
 def findPath(actorDict,start,target,visited,path):
     """
-    First attempt at combined DFS and BFS search - 
-    change depth of dfs search using depth variable
-    cannot accurately deliver best path consistently due to
-    it eliminating previously seen actors for potential 
-    future connection
+    Attempt at combined DFS and BFS search using depth limiter value - 
+    only returns the first and last connection between the two,
+    not the entire spanning tree.
     """
     depth = 2
     
@@ -77,17 +75,13 @@ def findPath(actorDict,start,target,visited,path):
         #actors in the cast of the movies start is in
         for actor in movieDict[currMovie]:
             if(actor == target):
-                #print(currMovie)
-                #print(path)
+                print(currMovie)
+                print(path)
                 exit(0)
                 
             elif(actor not in visited and currMovie not in path):
                 path.append(currMovie)
-                bfs(actorDict,actor,target,visited,path)
-    
-    # One of the searches we were taught
-    # Print the distance, # of traversals to measure performance
-    # Extra: Take that information and feed it to AI to set different weights later
+                findPath(actorDict,actor,target,visited,path)
 
 def findNeighbors(person_id):
     """ 
@@ -128,15 +122,18 @@ def findShortest(current, target):
                     return None
         if not target in parents:
             return None
-                
-def dfs(actorDict,start,target):
-    pass
 
-#movie_file = open("actor_data.txt", "w")
-#movieCount()
-#movie_file.close()
-#important = movieCount()
-#traverseGraph(important, start="Kevin Bacon", target="Brad Pitt")
+def proper():
+    """
+    Function to run findShortest() with Paul Rudd as target
+    """
+    path = findShortest(og, target='Paul Rudd')
+    if path is None:
+        print("Not found")
+    else:
+        degrees_of_separation = len(path)
+        print(f"{degrees_of_separation} degrees of separation.")
+        print(path)
 
 moviesList = load()
 movieDict = createMovieDict()
@@ -144,14 +141,5 @@ actorDict = movieCount()
 actorDictLength = (len(actorDict))
 og = 'Kevin Bacon'
 
-
-path = findShortest(og, target='Paul Rudd')
-if path is None:
-    print("Not found")
-else:
-    degrees_of_separation = len(path)
-    print(f"{degrees_of_separation} degrees of separation.")
-
-    print(path)
-
-#print(findPath(actorDict,start=og, target='Paul Rudd',visited=[],path = []))
+print(findPath(actorDict,start=og, target='Paul Rudd',visited=[],path = []))
+proper()
