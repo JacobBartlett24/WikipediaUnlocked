@@ -1,6 +1,8 @@
 import json
 import re
 
+#File last edited mid-semester
+
 moviesList = [] #precursor for the list of json objects fetched through other functions
 testList = [{"title":"Manhatta","cast":['Morgan Freeman'],"directors":["[[Charles Sheeler]]","[[Paul Strand]]"],"year":1921},
 {"title":"something","cast":[],"directors":["[[Charles Sheeler]]","[[Paul Strand]]"],"year":1921},
